@@ -1,0 +1,146 @@
+/* Q.1) Find the maximum element in an array*/
+#include <iostream>
+using namespace std;
+int main() {
+  int arr[10];
+  int max;
+  cout<<"Enter the elements of the array:"<<endl;
+  for(int i = 0; i<10 ; i++){
+      cin>>arr[i];
+  }
+  max = arr[0];
+for(int i = 1; i<10; i++){
+    if(max<arr[i]){
+        max = arr[i];
+    }
+}
+cout<<"The maximum element in the array is:"<<" "<<max<<endl;
+    return 0;
+}
+
+/* Q.2) Calculate  the average of all elements of the array using pointer notation.*/
+#include <iostream>
+using namespace std;
+int main() {
+int arr[10];
+int sum = 0;
+float avg;
+cout<<"Enter the elements of the array:"<<endl;
+for(int i = 0; i<10; i++){
+    cin>>*(arr+i);
+}
+for(int i = 0; i<10; i++){
+    sum = sum + *(arr+i);
+}
+avg = (float)sum/10;
+cout<<"The Average is:"<<" "<<avg<<endl;
+    return 0;
+}
+
+/* Q.3) Copy elements of one array into another array using pointer notation.*/
+#include <iostream>
+using namespace std;
+int main() {
+int arr1[10];
+int arr2[10];
+cout<<"Enter the elements of arr1:"<<endl;
+for(int i = 0; i<10; i++){
+    cin>>*(arr1+i);
+}
+for(int i =0; i<10; i++){
+    *(arr2+i) = *(arr1+i);
+}
+cout<<"The elements of arr2[] are:"<<endl;
+for(int i = 0; i<10; i++){
+    cout<<*(arr2+i)<<" ";
+}
+    return 0;
+}
+
+/* Q.4) Add two, two dimensional matrices using pointer notation. */
+#include <iostream>
+using namespace std;
+int main() {
+int arr1[3][3];
+int arr2[3][3];
+int arr3[3][3];
+cout<<"Enter elements of arr1[]:"<<endl;
+for(int i = 0; i<3; i++){
+for(int j = 0; j<3; j++){
+    cin>>*(*(arr1+i)+j);
+}
+}
+cout<<"Enter elements of arr2[]:"<<" ";
+for(int i = 0; i<3; i++){
+for(int j = 0; j<3; j++){
+    cin>>*(*(arr2+i)+j);
+}
+    }
+for(int i = 0; i<3; i++){
+for(int j = 0; j<3; j++){
+    *(*(arr3+i)+j) = *(*(arr1+i)+j) + *(*(arr2+i)+j);
+}
+   }
+cout<<"The elements of the arr3[] are:"<<" ";
+for(int i = 0;i<3; i++){
+    for(int j = 0; j<3; j++){
+        cout<<*(*(arr3+i)+j)<<" ";
+    }
+}
+    return 0;
+}
+
+/* Q.4) Write a program to create transpose of a matrix using pointer notation. */
+#include <iostream>
+using namespace std;
+int main() {
+int arr[3][3];
+int arr1[3][3];
+cout<<"Enter the elements of array arr[]:"<<" ";
+for(int i = 0; i<3 ; i++){
+    for(int j = 0; j<3; j++){
+        cin>>*(*(arr+i)+j);
+    }
+}
+for(int i = 0; i<3; i++){
+    for(int j = 0; j<3; j++){
+        *(*(arr1+i)+j) = *(*(arr+j)+i);
+    }
+}
+cout<<"The transpose of the matrix is:"<<endl;
+for(int i = 0; i<3; i++){
+    for(int j = 0; j<3; j++){
+        cout<<*(*(arr1+i)+j)<<" ";
+    }
+    cout<<endl;
+}
+    return 0;
+}
+
+/* Q.5) Write a program to print square of all elements of a 2-D array using pointer notation. */
+#include <iostream>
+using namespace std;
+int main() {
+int arr[3][3];
+int arr1[3][3];
+cout<<"Enter the elements of array arr[]:"<<" ";
+for(int i = 0; i<3; i++){
+    for(int j = 0; j<3; j++){
+        cin>>*(*(arr+i)+j);
+    }
+}
+for(int i = 0; i<3; i++){
+    for(int j = 0; j<3; j++){
+        *(*(arr1+i)+j) = *(*(arr+i)+j)  *  *(*(arr+i)+j);
+    }
+}
+cout<<"Square of the elements of the matrix is:"<<endl;
+for(int i = 0; i<3; i++){
+    for(int j = 0; j<3; j++){
+        cout<<*(*(arr1+i)+j)<<" ";
+    }
+    cout<<endl;
+}
+    return 0;
+}
+
