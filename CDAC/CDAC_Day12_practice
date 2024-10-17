@@ -1,0 +1,940 @@
+/* Simple Example of single inheritance*/
+#include <iostream>
+#include<cstring>
+using namespace std;
+class car{
+protected:
+  int price;
+  char*model;
+  public:
+ int len =1;
+  car(){
+      model = new char[len];
+  }
+  ~car(){
+      cout<<"Destructor is called !"<<endl;
+      delete[] model;
+  }
+  };
+class mercedes : public car{
+  public:
+  void setprice(int );
+  void setmodel(char*);
+  void pricedisplay();
+  void stringdisplay();
+  ~mercedes(){
+      cout<<"Destructor is called !"<<endl;
+      }
+};
+void mercedes::setprice(int a){
+    price = a;
+}
+void mercedes::setmodel(char*ch){
+    len = strlen(ch);
+    model = new char[len+1];
+    strcpy(model,ch);
+}
+void mercedes::pricedisplay(){
+    cout<<"The price of the car is:"<<" "<<"Rs:"<<price<<endl;
+}
+void mercedes::stringdisplay(){
+    cout<<"The model is:"<<" "<<model<<endl;
+}
+int main() {
+ mercedes m1;
+ m1.setprice(650000);
+ m1.pricedisplay();
+ m1.setmodel("XFCE");
+ m1.stringdisplay();
+ return 0;
+}
+
+/* In the above program the mercedes class is a sub-calass of class car. we can also say that class mercedes is an instsnce of class car, just as object m1 is an instance of class mercedes. The car class and the mercedes class follow a "is-a" relationship. we can say that class mercedes "is a" specialized version of class car.
+
+The "is-a" relationship reflects inheritance and implies that objects of the derived class can be used wherever objects of the base class are expected. Here's how this applies in the above program:
+                           car* myCar = new mercedes();
+In this case, myCar is a pointer to a "car", but it can point to an object of the derived class mercedes because mercedes "is a" car.
+
+Object of the derived class has two parts first is the base part and other is the derived part. The base part of the derived object is constructed first and then the derived part is constructed. So the order of constructer calling is
+base->derived. When an object of derived class is created the constructor of derived class is "just invoked" not executed. The control then jumps to the deffault constructer of the base class and it initiailizes the objects "inherted by the derived class".*/
+
+/*Why the construcor of base class is called when an object of derived class is created ?
+Ans: The base class inherites the members and member functions of the base class according to mode of inhertance (the access specifiers used). Now, when an object of the derived class is created all the derived class objects and all the members inherited by the sub-class or deived class must be initialized, but the definitions/implementation for the initialization of the base class members inherited by the derived class are present in the "base class" itself. So in order to initialize them the control must go to the base class construcctor. */
+
+/* In the program given below we can see that when object of derived class i.e. object s1 of class square is created the compiler just "invokes" the constructor of class square and instead of executing it, the control jumps to the default constructor of class shape. Attribute 'a' is initialized first and then attribute 'b' is initialized,because show function() and default constructor of class shape are inherited by class square, before initializing the show() function and default constructor of class square, members and member functions of class shape should be initialized. This is because the object of derived class has two parts and the base part is initialized first then the part of the object that belongs to derived class is initialized later.*/
+
+#include<iostream>
+using namespace std;
+class shape{
+    int a;
+    public:
+    shape();
+    void show();
+};
+shape::shape(){
+    a =10;
+}
+void shape::show(){
+    cout<<"In show function of class shape."<<endl;
+    cout<<"The value of a is:"<<" "<<a<<endl;
+}
+class square:public shape{
+  int b;
+  public:
+  square();
+  void show();
+};
+square::square(){
+    b = 20;
+}
+void square::show(){
+    shape::show();
+    cout<<"In show function of class square."<<endl;
+    cout<<"The value of b is:"<<" "<<b<<endl;
+}
+int main(){
+square s1;
+s1.show();
+    return 0;
+}
+
+/* Here we can see that show() function has the same return type and has the same signature in both the classes.It is behaving like an overrided function but it is not technically an overrided function because of the lack of "virtual" keyword.
+
+In order to make the show() function truly overided function we use the "vitual" keyword and make a pointer of the baseclass such that it stores the address of an object of the derived class.*/
+
+#include<iostream>
+using namespace std;
+class shape{
+    int a;
+    public:
+    shape();
+    virtual void show();
+};
+shape:: shape(){
+    a = 10;
+}
+void shape::show(){     // show function defined outside the class body. No need to write "virtual" keyword again.
+    cout<<"In the show function of class shape."<<endl;
+    cout<<"The value of a is:"<<" "<<a<<endl;
+}
+class square : public shape{
+    int b;
+    public:
+    square();
+    void show();
+};
+square::square(){
+    b = 20;
+}
+void square::show(){
+    shape::show(); //This line is optional. We can comment out this line and the program would not call the show()
+    cout<<"In the show function of class square."<<endl; // function of shape class.
+    cout<<"The value of b is:"<<" "<<b<<endl;
+}
+int main(){
+    shape*ptr = new square();
+    ptr->show();
+    delete ptr;
+    return 0;
+}
+
+/* In the above program show() function in the shape class is overridden by the show() function in square class. Now we have made show() function as a virtual function in the base class (i.e. shape class) and also given a pointer of shape class that holds the address of an object of the square class. when show() function is called by the main() function , since virual keyword is being used binding (polymorphism) will be dynamic (during runtime), so the type of object is checked and show() function for that object type is called. */
+
+/* Now if we do not use the "virtual" keyword in the definition of show() function the binding(or polymorphism) will be at compile time(or will be static). In that case the pointer will be checked and "ptr->show()" would rersult in main() function calling show() function of base class (i.e. of class shape).*/
+
+/* Without the virtual keyword the program would look like this: */
+
+#include <iostream>
+using namespace std;
+
+class Base {
+public:
+    void show() {  // No 'virtual' keyword
+        cout << "Base class show function" << endl;
+    }
+};
+
+class Derived : public Base {
+public:
+    void show() {  // Overrides the Base class function
+        cout << "Derived class show function" << endl;
+    }
+};
+
+int main() {
+    Base* basePtr = new Derived();  // Base pointer to Derived object
+    basePtr->show();  // Static binding happens here, calls Base's show()
+
+    Base baseObj;
+    baseObj.show();  // Also calls Base's show()
+
+    delete basePtr;
+    return 0;
+}
+
+/* In the program given below it is proved that using a derived class object that calls the parameterized constructor of derived class we cannot call the parameterized constructor of the base class if we do not call it explicitly using initializer list.*/
+
+ #include<iostream>
+using namespace std;
+class base{
+    int a;
+    public:
+    base(){
+        a =0;
+    }
+    base(int g){
+        a = g;
+    }
+void display(){
+    cout<<"In display of class base."<<endl;
+    cout<<"The value of a is:"<<" "<<a<<endl;
+}
+};
+class derived : public base{
+   int b;
+   public:
+  derived(){
+      b = 0;
+  }
+   derived(int f, int d){
+       b = d;
+       }
+void display(){
+    base:: display();
+    cout<<"In display of class derived."<<endl;
+    cout<<"The value of b is:"<<" "<<b<<endl;
+}
+};
+int main(){
+    derived d1(1,2);
+    d1.display();
+    return 0;
+}
+
+/* The output of this program is:
+
+In display of class base.
+The value of a is: 0
+In display of class derived.
+The value of b is: 2
+
+As we can see the value of a is not printed to be 1, but 0. This is because when object d1 is created compiler calls the default constructor of class base which initialzes the value of a to 0, and then the parametrized constructer of the derived class initializes the object d1.
+
+Also one important point is that even if the implementation/definition of default constructor of derived class is not explicitly written, the above program still produces the same output. Because when object of derived class is created the compiler calls the default constructor of base class and not the default constructor of the derived class.
+
+If we have to change the value of a we have to explicitly take the control to the parametrized constructor of the base class using initializer list. An important point to remember here is that we cannot call parametrized constructor of base class using default constructor of derived class, it has to be the parametrized constructor of derived class.
+
+Here is how the program would look like:
+*/
+
+#include<iostream>
+using namespace std;
+class base{
+    int a;
+    public:
+    base(){
+        a =0;
+    }
+    base(int g){
+        a = g;
+    }
+void display(){
+    cout<<"In display of class base."<<endl;
+    cout<<"The value of a is:"<<" "<<a<<endl;
+}
+};
+class derived : public base{
+   int b;
+   public:
+  derived(){
+      b = 0;
+  }
+   derived(int f, int d) : base(f){
+       b = d;
+       }
+void display(){
+    base:: display();
+    cout<<"In display of class derived."<<endl;
+    cout<<"The value of b is:"<<" "<<b<<endl;
+}
+};
+int main(){
+    derived d1(1,2);
+    d1.display();
+    return 0;
+}
+
+output of the above program is:
+
+In display of class base.
+The value of a is: 1
+In display of class derived.
+The value of b is: 2
+
+ /* If we have to pass "value" and not any other parameter like an object or variable, to the parameterized constructor of the base class, we can call the parameterized constructor of the base class by the default constructor of the derived class. This is the only exception to the rule that parameterized constructor of base class cannot be called by default constructor of derived class.
+
+ The following program proves this:*/
+
+ #include<iostream>
+using namespace std;
+class base{
+    int a;
+    public:
+    base(){
+        a = 10;
+    }
+    base(int j){
+        cout<<"In parameterized constructor of class base."<<endl;
+        a = j;
+    }
+void display(){
+    cout<<"In display of class base."<<endl;
+    cout<<"The value of a is:"<<" "<<a<<endl;
+}
+};
+class derived : public base{
+  int b;
+  public:
+  derived():base(67){ // Here instead of a passing value to the parameterized constructor of base class, if we had
+  cout<<"In default of class derived."<<endl; // tried to pass a variable of type int, the compiler would have
+    b = 8;                                    // given us an error.
+  }
+  void display(){
+      base::display();
+      cout<<"In display of class derived."<<endl;
+      cout<<"The value of b is:"<<" "<<b<<endl;
+  }
+};
+int main(){
+    derived f;
+    f.display();
+    return 0;
+}
+
+/* The output of the above program is:
+In parameterized constructor of class base.
+In default of class derived.
+In display of class base.
+The value of a is: 67
+In display of class derived.
+The value of b is: 8
+*/
+================================================================================================================
+/* Multilevel Inheritance*/
+
+/* Simplest example of multilevel inhertance*/
+
+#include<iostream>
+using namespace std;
+class colour{
+  public:
+  colour(){
+      cout<<"In the default constructor of class colour."<<endl;
+  }
+  ~colour(){
+      cout<<"in the destructor of class colour."<<endl;
+  }
+};
+class blue: public colour{
+  public:
+  blue(){
+      cout<<"In the default constructor of class blue."<<endl;
+  }
+  ~blue(){
+      cout<<"In destructor of class blue."<<endl;
+  }
+};
+class red : public blue{
+  public:
+  red(){
+      cout<<"In Default constructor of class red."<<endl;
+  }
+  ~red(){
+      cout<<"In the destructor of class red."<<endl;
+  }
+};
+int main(){
+    red r1;
+    return 0;
+}
+
+/* Output of the above program is:*/
+
+In the default constructor of class colour.
+In the default constructor of class blue.
+In Default constructor of class red.
+In the destructor of class red.
+In destructor of class blue.
+in the destructor of class colour.
+
+=================================================================================================
+*/ Example of multilevel inheritance*/
+
+#include<iostream>
+using namespace std;
+
+class employee {
+    int id;
+public:
+    employee() {
+        id = 0;
+    }
+    employee(int i) {
+        cout << "In the parameterized constructor of class employee." << endl;
+        id = i;
+    }
+    void show() {
+        cout << "In show function of class employee." << endl;
+        cout << "The id of employee is: " << id << endl;
+    }
+    int findsalary() {
+        return 0;
+    }
+};
+
+class wageemployee : public employee {  // wageemployee inherits from employee
+    int hrs, rate;
+public:
+    wageemployee() {
+        hrs = rate = 0;
+    }
+    wageemployee(int i, int h, int r) : employee(i) {
+        cout << "In the parameterized constructor of class wageemployee." << endl;
+        hrs = h;
+        rate = r;
+    }
+    int findsalary() {
+        return hrs * rate;
+    }
+    void show() {
+        employee::show();  // Now valid because wageemployee inherits from employee
+        cout << "In the show function of class wageemployee." << endl;
+        cout << "The hrs and rate is: " << hrs << " " << rate << endl;
+    }
+};
+
+class salesmanager : public wageemployee {
+    int comm, sales;
+public:
+    salesmanager()  {  // Initialize base class with default values
+        comm = sales = 0;
+    }
+    salesmanager(int i, int h, int r, int s, int c) : wageemployee(i, h, r) {
+        cout << "In parameterized constructor of class salesmanager." << endl;
+        sales = s;
+        comm = c;
+    }
+    int findsalary() {
+        return wageemployee::findsalary() + ((comm * sales) / 100);
+    }
+    void show() {
+        wageemployee::show();
+        cout << "In the show function of class salesmanager." << endl;
+        cout << "The commission and sales are: " << comm << " and " << sales << endl;
+    }
+};
+
+int main() {
+    salesmanager s1(100, 10, 500, 234567, 1);
+    salesmanager*ptr;
+    ptr = &s1;
+    cout<<"The salary of salesmanager is:"<<ptr->findsalary()<<endl;
+    ptr->show();
+    return 0;
+}
+
+The output of this code is:
+
+In the parameterized constructor of class employee.
+In the parameterized constructor of class wageemployee.
+In parameterized constructor of class salesmanager.
+The salary of salesmanager is:7345
+In show function of class employee.
+The id of employee is: 100
+In the show function of class wageemployee.
+The hrs and rate is: 10 500
+In the show function of class salesmanager.
+The commission and sales are: 1 and 234567
+
+/*polymorphism in detail*/
+
+/* The word polymorphism is made up of two words, poly and morphism. Poly means many and morphism means form or forms.
+
+What it essentially means is that a single named member (i.e, funtion) when passed from one class to another class will behave differently.
+
+IMP: Binding is the process of associating a function call with an object of a class.*/
+
+/* Types of polymorphism:
+
+1) Static Polymorphism (Compile time polymorphism)
+
+2) Dynamic Polymorphism (Run time polymorphism)
+
+1) Static Polymorphism (compile time plymorphism):
+1.1) This type of polymorphism occurs at compile time. The objects are bound to their function call at compile time.
+
+1.2) This type of binding is called static binding, and can be achieved by operator overloading or function overloadiing.
+
+1.3) The compiler decides which function to call at compile time based on the type, order and number of arguments.
+
+1.4) IMP-> At compile time the compiler will check the type of pointer rather than the type of object.
+
+1.5) The execution rate of compile time binding is faster as compared to run time binding.
+
+1.6) Static binding does not involve inheritance.
+
+
+2) Dynamic Polymorphism (Run time polymorphism):
+2.1) This type of polymorphism occurs at run time. The decision of which function is to be invoked is taken at runtime, and it can be achieved by function overriding.
+
+2.2) In this type of binding the comipler checks the type of object rather than the type of pointer or type of refrence.
+
+2.3) The execution of run time binding is slower as compared to compile time binding.
+
+2.4) Dynamic binding involves inheritance.
+*/
+
+/* IMP --> VIRTUAL FUNCTION: Virtual function is a special type of member function that is declared in the base class and can be overridden by the class that inherites the attributes of the base class.*/
+
+/* Definition of virtual function by chat gpt:A virtual function is a member function in a base class that you can override in a derived class. It is declared using the keyword virtual in the base class. Virtual functions enable polymorphism, allowing the program to decide at runtime which function to invoke, depending on the type of the object that is being pointed to, rather than the type of the pointer.  */
+
+/* Important points about virtual functions: */
+
+/*1) Virtual function can be redefined in the inherited class or classes.
+
+2) Constructors cannot be made virtual.
+
+3) Destructors can be made virtual.
+
+4) Virtual keyword should not be written in the function definition, unless the definition is being provided along with the declaration. Also if the function that is overridden is defined outside the class definition even then the virtual keyword should not be written in it(it means the definition).
+
+5) Friend functions cannot be vitual functions, this is because friend functions are not member functions so they cannot be overrided or inherited.
+
+6) Functions that are overridden are declared virtual in the base class because base class pointer is used to invoke functions of appropriate class type at runtime.
+
+7) Constructors cannot be made virtual, because when an object of derived class is created, constructor of base class is called and the objects of the base class are initialized first. If we make the constructor virtual the default constructor of the derived class will be automatically called and the control will not go to the default constructor of base class and the memebers of base class will not be initialized. To avoid such a situation compiler does not allow us to make constructor as virtual.
+
+8) If a function is declared virtual in base class it will be treated as virtual function in derived class as well, even if virtual keyword is not used.
+*/
+
+/* Case 1) Object creation on stack without virtual keyword.*/
+
+#include<iostream>
+using namespace std;
+class employee{
+  int id;
+  public:
+  employee(){
+      id =0;
+  }
+  employee(int i){
+      cout<<"In the parametrized constructor of class employee."<<endl;
+      id = i;
+  }
+  void show(){
+      cout<<"In the show function of class employee."<<endl;
+      cout<<"The ID of the employee is:"<<" "<<id<<endl;
+  }
+ int findsalary(){
+     return 0;
+ }
+ };
+ class wageemployee : public employee{
+   int hrs,rate;
+   public:
+   wageemployee(){
+       hrs = rate = 0;
+   }
+   wageemployee(int i, int h, int r) : employee(i){
+       cout<<"Inside parametrized constructor of class wageemployee."<<endl;
+       hrs = h;
+       rate = r;
+   }
+   void show(){
+       employee:: show();
+       cout<<"Inside the show function of class wageemployee."<<endl;
+       cout<<"The value of hrs and rate is:"<<" "<<hrs<<" "<<"and"<<" "<<rate<<endl;
+   }
+   int findsalary(){
+       return rate*hrs;
+   }
+ };
+ class salesmanager : public wageemployee{
+   int comm,sales;
+   public:
+   salesmanager(){
+       comm = sales = 0;
+   }
+   salesmanager(int i, int h, int r, int s, int c) : wageemployee(i,h,r){
+       cout<<"Inside the parametrized constructor of class salesmanager."<<endl;
+       sales = s;
+       comm = c;
+       }
+void show(){
+    wageemployee::show();
+    cout<<"In the show function of class salesmanager."<<endl;
+    cout<<"The values of commission and sales are:"<<" "<<sales<<" "<<"and"<<" "<<comm<<endl;
+}
+int findsalary(){
+    return wageemployee:: findsalary() +((comm*sales)/100);
+}
+ };
+ int main(){
+     employee*ptr;
+     salesmanager s1(100,10,500,234567,1);
+     ptr = &s1;
+     ptr->show();
+     return 0;
+ }
+
+ /* In the above program virtual keyword is not used in the declaration of any function, and object creation happens on stack. As as result static binding takes place and the compiler checks the type of pointer (which in this case is employee*) and then calls the function of that type(i.e, the compiler calls the show() function of class  employee and not of class salesmanager.) */
+
+ /*  Case 2) Object Creation on heap with new keyword without virtual keyword.*/
+
+
+ #include<iostream>
+using namespace std;
+class employee{
+  int id;
+  public:
+  employee(){
+      id =0;
+  }
+  employee(int i){
+      cout<<"In the parametrized constructor of class employee."<<endl;
+      id = i;
+  }
+  void show(){
+      cout<<"In the show function of class employee."<<endl;
+      cout<<"The ID of the employee is:"<<" "<<id<<endl;
+  }
+ int findsalary(){
+     return 0;
+ }
+ };
+ class wageemployee : public employee{
+   int hrs,rate;
+   public:
+   wageemployee(){
+       hrs = rate = 0;
+   }
+   wageemployee(int i, int h, int r) : employee(i){
+       cout<<"Inside parametrized constructor of class wageemployee."<<endl;
+       hrs = h;
+       rate = r;
+   }
+   void show(){
+       employee:: show();
+       cout<<"Inside the show function of class wageemployee."<<endl;
+       cout<<"The value of hrs and rate is:"<<" "<<hrs<<" "<<"and"<<" "<<rate<<endl;
+   }
+   int findsalary(){
+       return rate*hrs;
+   }
+ };
+ class salesmanager : public wageemployee{
+   int comm,sales;
+   public:
+   salesmanager(){
+       comm = sales = 0;
+   }
+   salesmanager(int i, int h, int r, int s, int c) : wageemployee(i,h,r){
+       cout<<"Inside the parametrized constructor of class salesmanager."<<endl;
+       sales = s;
+       comm = c;
+       }
+void show(){
+    wageemployee::show();
+    cout<<"In the show function of class salesmanager."<<endl;
+    cout<<"The values of commission and sales are:"<<" "<<sales<<" "<<"and"<<" "<<comm<<endl;
+}
+int findsalary(){
+    return wageemployee:: findsalary() +((comm*sales)/100);
+}
+ };
+ int main(){
+     employee*ptr = new salesmanager();
+     salesmanager s1(100,10,500,234567,1);
+     ptr = &s1;
+     ptr->show();
+     return 0;
+ }
+
+ /* In the above program dynamic memory allocation happens using the new keyword. But since "virtual" keyword is not being used satic binding takes place and the type of pointer is checked by the compiler and function the type of pointer is called (i.e, in this case ptr type is employee* the show() function of class employee is called instead of class salesmanager.)*/
+
+/* Case 3) Object creation on stack with "virtual" keyword. */
+
+#include<iostream>
+using namespace std;
+class employee{
+  int id;
+  public:
+  employee(){
+      id =0;
+  }
+  employee(int i){
+      cout<<"In the parametrized constructor of class employee."<<endl;
+      id = i;
+  }
+ virtual void show(){
+      cout<<"In the show function of class employee."<<endl;
+      cout<<"The ID of the employee is:"<<" "<<id<<endl;
+  }
+ int findsalary(){
+     return 0;
+ }
+ };
+ class wageemployee : public employee{
+   int hrs,rate;
+   public:
+   wageemployee(){
+       hrs = rate = 0;
+   }
+   wageemployee(int i, int h, int r) : employee(i){
+       cout<<"Inside parametrized constructor of class wageemployee."<<endl;
+       hrs = h;
+       rate = r;
+   }
+   void show(){
+       employee:: show();
+       cout<<"Inside the show function of class wageemployee."<<endl;
+       cout<<"The value of hrs and rate is:"<<" "<<hrs<<" "<<"and"<<" "<<rate<<endl;
+   }
+   int findsalary(){
+       return rate*hrs;
+   }
+ };
+ class salesmanager : public wageemployee{
+   int comm,sales;
+   public:
+   salesmanager(){
+       comm = sales = 0;
+   }
+   salesmanager(int i, int h, int r, int s, int c) : wageemployee(i,h,r){
+       cout<<"Inside the parametrized constructor of class salesmanager."<<endl;
+       sales = s;
+       comm = c;
+       }
+void show(){
+    wageemployee::show();
+    cout<<"In the show function of class salesmanager."<<endl;
+    cout<<"The values of commission and sales are:"<<" "<<sales<<" "<<"and"<<" "<<comm<<endl;
+}
+int findsalary(){
+    return wageemployee:: findsalary() +((comm*sales)/100);
+}
+ };
+ int main(){
+     employee*ptr;
+     salesmanager s1(100,10,500,234567,1);
+     ptr = &s1;
+     ptr->show();
+     return 0;
+ }
+
+ /* In the above program "virtual"  keyword is used to make the show() function virtual that is why the type pointer is not checked but the type of object is checked by the compiler and show() function of class salesmanager is called and not of class employee.*/
+
+/* Case 4) Object creation on heap using new keyword also making function virtual  */
+
+#include<iostream>
+using namespace std;
+class employee{
+  int id;
+  public:
+  employee(){
+      id =0;
+  }
+  employee(int i){
+      cout<<"In the parametrized constructor of class employee."<<endl;
+      id = i;
+  }
+ virtual void show(){
+      cout<<"In the show function of class employee."<<endl;
+      cout<<"The ID of the employee is:"<<" "<<id<<endl;
+  }
+ int findsalary(){
+     return 0;
+ }
+ };
+ class wageemployee : public employee{
+   int hrs,rate;
+   public:
+   wageemployee(){
+       hrs = rate = 0;
+   }
+   wageemployee(int i, int h, int r) : employee(i){
+       cout<<"Inside parametrized constructor of class wageemployee."<<endl;
+       hrs = h;
+       rate = r;
+   }
+   void show(){
+       employee:: show();
+       cout<<"Inside the show function of class wageemployee."<<endl;
+       cout<<"The value of hrs and rate is:"<<" "<<hrs<<" "<<"and"<<" "<<rate<<endl;
+   }
+   int findsalary(){
+       return rate*hrs;
+   }
+ };
+ class salesmanager : public wageemployee{
+   int comm,sales;
+   public:
+   salesmanager(){
+       comm = sales = 0;
+   }
+   salesmanager(int i, int h, int r, int s, int c) : wageemployee(i,h,r){
+       cout<<"Inside the parametrized constructor of class salesmanager."<<endl;
+       sales = s;
+       comm = c;
+       }
+void show(){
+    wageemployee::show();
+    cout<<"In the show function of class salesmanager."<<endl;
+    cout<<"The values of commission and sales are:"<<" "<<sales<<" "<<"and"<<" "<<comm<<endl;
+}
+int findsalary(){
+    return wageemployee:: findsalary() +((comm*sales)/100);
+}
+ };
+ int main(){
+     employee*ptr = new salesmanager();
+     salesmanager s1(100,10,500,234567,1);
+     ptr = &s1;
+     ptr->show();
+     return 0;
+ }
+
+ /* In the above program we have used "virtual" keyword to make the show() function virtual and allocated memory for the s1 object of class salesmanager on heap using the "new" keyword. Here it os of no consequence that we have used the "new" keyword or not, since the show() function is made virtual the compiler will check the type of object and call the show() function of class salesmanager. */
+
+ /* The output of case 3 and case 4 is the same, it indicates that the usage of "new" keyword has no impact on dynamic binding. Dynmaic binding soley depends on the usage of "virtual" keyword. */
+
+ /* Pure Virtual Functions and Abstact Classes */
+
+ #include<iostream>
+using namespace std;
+class employee{
+  int id;
+  public:
+  employee(){
+      id =0;
+  }
+  employee(int i){
+      cout<<"In the parametrized constructor of class employee."<<endl;
+      id = i;
+  }
+ virtual void show(){
+      cout<<"In the show function of class employee."<<endl;
+      cout<<"The ID of the employee is:"<<" "<<id<<endl;
+  }
+virtual int findsalary() = 0;
+ };
+ class wageemployee : public employee{
+   int hrs,rate;
+   public:
+   wageemployee(){
+       hrs = rate = 0;
+   }
+   wageemployee(int i, int h, int r) : employee(i){
+       cout<<"Inside parametrized constructor of class wageemployee."<<endl;
+       hrs = h;
+       rate = r;
+   }
+   void show(){
+       employee:: show();
+       cout<<"Inside the show function of class wageemployee."<<endl;
+       cout<<"The value of hrs and rate is:"<<" "<<hrs<<" "<<"and"<<" "<<rate<<endl;
+   }
+   int findsalary(){
+       return rate*hrs;
+   }
+ };
+ class salesmanager : public wageemployee{
+   int comm,sales;
+   public:
+   salesmanager(){
+       comm = sales = 0;
+   }
+   salesmanager(int i, int h, int r, int s, int c) : wageemployee(i,h,r){
+       cout<<"Inside the parametrized constructor of class salesmanager."<<endl;
+       sales = s;
+       comm = c;
+       }
+void show(){
+    wageemployee::show();
+    cout<<"In the show function of class salesmanager."<<endl;
+    cout<<"The values of commission and sales are:"<<" "<<sales<<" "<<"and"<<" "<<comm<<endl;
+}
+int findsalary(){
+    return wageemployee:: findsalary() +((comm*sales)/100);
+}
+ };
+ int main(){
+     employee*ptr = new salesmanager();
+     salesmanager s1(100,10,500,234567,1);
+     ptr = &s1;
+     ptr->show();
+     return 0;
+ }
+
+ /* In the program given above we have declared findsalary() function as :
+
+                                virtual int findsalary() = 0;
+        In General virtual return_type function_name(arguments) = 0;
+    This type of declaration makes the findsalary() function a "PURE VIRTUAL FUNCTION".
+
+Pure Virtual Function: A pure virtual function is a virtual function that does not have any implementation (A function that does not have any executable code) in the base class. It is declared by assigning 0 to the virtual function in the base class. Pure virtual functions make a class abstract, meaning that the class cannot be instantiated on its own and must be inherited by other classes that provide concrete implementations of the pure virtual functions.
+
+Properties of Pure Virtual Function:
+
+1) A class that has at least one pure virtual function is called as an abstract class.
+
+2) A pure virtual function is represented by a ( = 0 ) in the function declaration not in the function definition.
+
+3) If a class is made up of all pure virtual functions it is called as a Pure Abstract Class.
+
+4) If a class has a pure virtual function then that function must be overrided and the sub-class or derived class must provide a definition to the pure virtual Function otherwise the sub-class automatically becomes an Abstract Class.
+
+5) We cannot make objects of an Abstract class but we can make pointers of Abstract class.After making pointers we can store the address of any object of the derived class and using that pointer we can call the appropriate functions.
+
+6) Abstract classes supports runtime polymorphism.
+
+7) If a class is too generic to write its definition, it is made a Abstract Class. So the whole purpose of making Abstract Classes is to provide a baseclass for other classes.
+
+/* Similarities and differences between virtual and pure virtual function */
+
+/* Similarities:
+
+1) Both virtual and pure-virtual functions support run time polymorphism.
+
+2) These functions can't be static.
+
+3) Constructors cannot be made virtual or pure virtual.
+
+4) Destructors can be made virtual and pure virtual.
+
+5) Both virtual and pure virtual functions can be overrided.
+
+
+Differences:
+
+1) A virtual function is a member function of the base class whose definition can be modified by the derived class or classes. Whereas only the declaration of pure virtual function is provided in the base class and its definition needs to be provided by the derived class or the derived class  automatically becomes an Abstract Class.
+
+2) Classes having virtual function are not abstract but base classes containing at least one pure virtual function becomes an Abstract Class.
+
+3) Differences in syntax :
+
+VIRTUAL FUNCTION:
+
+virtual return_type function_name(arguments);
+
+PURE VIRTUAL FUNCTION:
+
+virtual return_type function_name(arguments) = 0;
+
+4) Definition of a virtual function is given in the base class. Whereas definition of pure virtual class is not given in the base-class.
+
+5) Classes having virtual function can be instaniated(meaning that objects of that class can be created) and a class having even one pure virtual function cannot be instantiated (As it is an Abstract Class).
+
+6) A derived class may or may do provide a definition for a virtual function, but a derived class must provide a definition for a pure virtual function, otherwise it will become an Abstract Class.
+*/
+
